@@ -221,11 +221,11 @@ void printaEquipamentos(int aux) {
 
             case 2:
                 printf("Insira a nova potência de uso");
-                scanf("%f",equipamentos[pos].uso);
+                scanf("%f",&equipamentos[pos].uso);
                 break;
             case 3:
                 printf("Insira a nova potência de stand-by");
-                scanf("%f", equipamentos[pos].stand);
+                scanf("%f", &equipamentos[pos].stand);
                 break;
             case 4:
                 x = 0;
@@ -250,9 +250,9 @@ void criarEquip() {
             scanf(" %[^\n]s", nome);
             strcpy(equipamentos[i].nome, nome);
             printf("Informe a Potência do Aparelho em uso?\n");
-            scanf("%f", equipamentos[i].uso);
+            scanf("%f", &equipamentos[i].uso);
             printf("Informe a Potência do Aparelho em stand-by\n");
-            scanf("%f", equipamentos[i].stand);
+            scanf("%f", &equipamentos[i].stand);
             printf("Deseja adicionar mais equipamentos?\n");
             printf("1 - Sim\n");
             printf("2 - Não\n");
