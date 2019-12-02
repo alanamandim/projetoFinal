@@ -5,18 +5,17 @@
 #define MAX_AMB 20
 
 
-float taxa = 0.3;
+float taxa;
 struct TEquipamentos {
     int id;
     char nome[20];
-    float uso, stand; /* Potência em uso e stand-by */
+    float uso, stand, tempo; /* Potência em uso e stand-by */
 } equipamentos[MAX_EQUIP];
 
 struct TAmbientes {
     int id;
     char nome[20];
     float consumo;
-    float uso[MAX_EQUIP], stand[MAX_EQUIP]; /* Horas em uso e horas em stand-by*/
     struct TEquipamentos equipamentosambientes[MAX_EQUIP];
 
 } ambientes[MAX_AMB];
@@ -24,9 +23,9 @@ struct TAmbientes {
 void cal_kwh_ambientes() {
     for (int i = 0; i < MAX_AMB; i++) /* Aqui é feito o cálculo do consumo total diário em Kwh de cada ambiente  */ {
         for (int j = 0; j < MAX_AMB; j++) {
-            ambientes[i].consumo = (ambientes[i].equipamentosambientes[j].uso * ambientes[i].uso[j]) +
-                                   (ambientes[i].equipamentosambientes[j].stand * ambientes[i].stand[j]);
-
+            ambientes[i].consumo =
+                    (ambientes[i].equipamentosambientes[j].uso * ambientes[i].equipamentosambientes[j].tempo) +
+                    (ambientes[i].equipamentosambientes[j].stand * (24 - ambientes[i].equipamentosambientes[j].tempo));
         }
     }
 }
@@ -67,14 +66,10 @@ void adicionarAmbiente() {  //loop infinito
             printf("Insira o nome do ambiente: ");
             scanf(" %[^\n]s", nome);
             strcpy(ambientes[i].nome, nome);
-            printf("Insira quantas horas a sala fica ativa:");
-            scanf("%f", &ambientes[i].uso);
-            printf("Insira quantas horas a sala fica inativa:");
-            scanf("%f", &ambientes[i].stand);
             printf("Deseja adicionar mais ambientes?\n");
             printf("1 - Sim\n");
             printf("2 - Não\n");
-            printf("->");
+            printf("-> ");
             scanf("%d", &x);
             if (x == 2)
                 i = MAX_AMB;
@@ -82,52 +77,88 @@ void adicionarAmbiente() {  //loop infinito
     }
 }
 
-void adicionarEquipamento(int aux) {
-    for (int i = 0; i < MAX_EQUIP; i++) {
-        if (ambientes[aux].equipamentosambientes[i].id == 0)
-            continue;
-        printf("%d - %s  horas consumo: %f, stand-by: %f \n", ambientes[aux].equipamentosambientes[i].id,
-               ambientes[aux].equipamentosambientes[i].uso, ambientes[aux].equipamentosambientes[i].stand);
-    }
-}
+//void adicionarEquipamento(int aux) { // ATENÇÃO : EM PROCESSO DE EDIÇÃO!!!//
+//    for (int i = 0; i < MAX_EQUIP; i++) {
+//        if (ambientes[aux].equipamentosambientes[i].id == 0)
+//            continue;
+//        printf("%d - %s  horas consumo: %f, stand-by: %f \n", ambientes[aux].equipamentosambientes[i].id,
+//               ambientes[aux].equipamentosambientes[i].uso, ambientes[aux].equipamentosambientes[i].stand);
+//    }
+//    int x = 1;
+//    while (x) {
+//        printf("1-    ");
+//        printf("0 - Voltar");
+//        scanf( % d, &escolha);
+//        switch (escolha) {
+//            case 1:
+//
+//                break;
+//
+//            case 2:
+//                x = 0;
+//                break;
+//        }
+//    }
+//}
 
 void printaAmbiente(int aux) {
     int escolha;
     char altnome[20];
-    printf("Nome: %s\n", ambientes[aux].nome);
-    printf("1 - Alterar o nome");
-    printf("2 - Adicionar equipamento");
-    printf("3 - Excluir equipamento");
-    scanf("%d", &escolha);
-    switch (escolha) {
-        case 1: {
+    int pos = aux - 1;
+    int x = 1;
+    while (x) {
+        printf("Nome: %s\n", ambientes[pos].nome);
+        printf("1 - Alterar o nome\n");
+        printf("2 - Adicionar equipamento\n");
+        printf("3 - Excluir equipamento\n");
+        printf("4 - Voltar\n");
+        scanf("%d", &escolha);
+        switch (escolha) {
+            case 1:
+                printf("Insira o novo nome: ");
+                scanf(" %[^\n]s", altnome);
+                strcpy(ambientes[pos].nome, altnome);
+                break;
 
+            case 2:
+                //adicionarEquipamento(pos);
+                break;
+            case 3:
+                //excluirEquipamento();
+                break;
+            case 4:
+                x = 0;
+                break;
+            default:
+                printf("Opção Inválida");
+                break;
 
-            scanf(" %[^\n]s", altnome);
-            strcpy(ambientes[aux].nome), altnome);
-            break;
         }
-        case 2:
-            adicionarEquipamento(aux);
-            break;
-        case 3:
-            excluirEquipamento();
-            break;
 
     }
-
 }
 
-void editarAmbiente() {
+void editarAmbiente() {  //editado!!!!!!/
     int escolha;
-    char nome[20];
-    for (int i = 0; ambientes[i].id != 0; i++) {
-        printf("%d - %s\n", ambientes[i].id, ambientes[i].nome);
+
+    while (1) {
+        int count = 0;
+        for (int i = 0; ambientes[i].id != 0; i++) {
+            printf("%d - %s\n", ambientes[i].id, ambientes[i].nome);
+            count++;
+        }
+        printf("0 - Voltar\n");
+        printf("Digite o id do ambiente que deseja editar: ");
+        scanf("%d", &escolha);
+
+        if (escolha == 0) {
+            break;
+        } else if (escolha > 0 && escolha <= count) {
+            printaAmbiente(escolha);
+        } else {
+            printf("Opção invalida!");
+        }
     }
-    printf("Selecione o ambiente que deseja editar");
-    scanf("%d", &escolha);
-
-
 }
 
 void menuAmbientes() {
@@ -161,6 +192,140 @@ void menuAmbientes() {
     }
 }
 
+void printaEquip() {
+    for (int i = 0; i < MAX_EQUIP; i++) {
+        if (equipamentos[i].id == 0)
+            continue;
+        printf("%d - %s Pot. consumo: %f, Pot. stand-by: %f \n", equipamentos[i].id, equipamentos[i].nome,
+               equipamentos[i].uso, equipamentos[i].stand);
+    }
+}
+void printaEquipamentos(int aux) {
+    int escolha;
+    char altnome[20];
+    int pos = aux - 1;
+    int x = 1;
+    while (x) {
+        printf("Nome: %s\n", equipamentos[pos].nome);
+        printf("1 - Alterar o nome\n");
+        printf("2 - Alterar Potência de Uso\n");
+        printf("3 - Alterar Potência de stand-by\n");
+        printf("4 - Voltar\n");
+        scanf("%d", &escolha);
+        switch (escolha) {
+            case 1:
+                printf("Insira o novo nome: ");
+                scanf(" %[^\n]s", altnome);
+                strcpy(equipamentos[pos].nome, altnome);
+                break;
+
+            case 2:
+                printf("Insira a nova potência de uso");
+                scanf("%f",equipamentos[pos].uso);
+                break;
+            case 3:
+                printf("Insira a nova potência de stand-by");
+                scanf("%f", equipamentos[pos].stand);
+                break;
+            case 4:
+                x = 0;
+                break;
+            default:
+                printf("Opção Inválida");
+                break;
+
+        }
+
+    }
+}
+
+void criarEquip() {
+    char nome[20];
+    int x;
+
+    for (int i = 0; i < MAX_EQUIP; i++) {
+        if (equipamentos[i].id == 0) {
+            equipamentos[i].id = i + 1;
+            printf("Insira o nome do equipamento: ");
+            scanf(" %[^\n]s", nome);
+            strcpy(equipamentos[i].nome, nome);
+            printf("Informe a Potência do Aparelho em uso?\n");
+            scanf("%f", equipamentos[i].uso);
+            printf("Informe a Potência do Aparelho em stand-by\n");
+            scanf("%f", equipamentos[i].stand);
+            printf("Deseja adicionar mais equipamentos?\n");
+            printf("1 - Sim\n");
+            printf("2 - Não\n");
+            printf("-> ");
+            scanf("%d", &x);
+            if (x == 2)
+                i = MAX_EQUIP;
+        }
+    }
+}
+
+void excluirEquip() {
+
+}
+
+void editarEquip() {
+    while (1) {
+        int escolha;
+        int count = 0;
+        for (int i = 0; i < MAX_EQUIP; i++) {
+            if (equipamentos[i].id == 0)
+                continue;
+            printf("%d - %s Pot. consumo: %f, Pot. stand-by: %f \n", equipamentos[i].id, equipamentos[i].nome,
+                   equipamentos[i].uso, equipamentos[i].stand);
+            count++;
+        }
+
+        printf("0 - Voltar\n");
+        printf("Digite o id do equipamento que deseja editar: \n");
+        scanf("%d", &escolha);
+
+        if (escolha == 0) {
+            break;
+        } else if (escolha > 0 && escolha <= count) {
+            printaEquipamentos(escolha);
+        } else {
+            printf("Opção invalida!");
+        }
+    }
+
+}
+
+
+void menuEquipamentos() { // ATENÇÃO EM PROCESSO DE EDIÇÃO!!!//
+    int x = 1;
+    while (x) {
+        int escolha;
+        printaEquip();
+        printf("1 - Criar\n");
+        printf("2 - Excluir\n");
+        printf("3 - Editar\n");
+        printf("0 - Voltar\n");
+        printf("-> ");
+        scanf("%d", &escolha);
+        switch (escolha) {
+            case 1:
+                criarEquip();
+                break;
+            case 2:
+                //excluirEquip();
+                break;
+            case 3:
+                editarEquip();
+                break;
+            case 0:
+                x = 0;
+                break;
+            default:
+                printf("Opção Invalida!");
+                break;
+        }
+    }
+}
 
 int main() {
     cal_kwh_ambientes();
@@ -187,7 +352,7 @@ int main() {
                 menuAmbientes();
                 break;
             case 3:
-                printf("Adicionar equipamentos\n");
+                menuEquipamentos();
                 break;
             case 4:
                 printf("Saindo");
@@ -197,8 +362,5 @@ int main() {
                 printf("Opção Inválida\n");
                 break;
         }
-
-        //printf("Semanal %.2fR$", (ambientes[0].consumo) * 7);
-
     }
 }
