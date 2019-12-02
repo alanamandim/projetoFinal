@@ -100,7 +100,33 @@ void adicionarAmbiente() {  //loop infinito
 //        }
 //    }
 //}
+void excluiAmbiente(int aux){
+    int pos=aux-1;
+    char altnome[20];
+    strcpy(ambientes[pos].nome, altnome);
+}
+void removerAmbiente(){
+    int escolha;
 
+    while (1) {
+        int count = 0;
+        for (int i = 0; ambientes[i].id != 0; i++) {
+            printf("%d - %s\n", ambientes[i].id, ambientes[i].nome);
+            count++;
+        }
+        printf("0 - Voltar\n");
+        printf("Digite o id do ambiente que deseja remover: ");
+        scanf("%d", &escolha);
+
+        if (escolha == 0) {
+            break;
+        } else if (escolha > 0 && escolha <= count) {
+            excluiAmbiente(escolha);
+        } else {
+            printf("Opção invalida!");
+        }
+    }
+}
 void printaAmbiente(int aux) {
     int escolha;
     char altnome[20];
@@ -180,7 +206,7 @@ void menuAmbientes() {
                 editarAmbiente();
                 break;
             case 3:
-                //1  removerAmbiente();
+                  removerAmbiente();
                 break;
             case 4:
                 x = 0;
@@ -263,8 +289,36 @@ void criarEquip() {
         }
     }
 }
+void removeEquipamento(int aux){
+    int pos=aux-1;
+    char nome[20];
+    strcpy(equipamentos[pos].nome,nome);
+    equipamentos[pos].uso=0;
+    equipamentos[pos].stand=0;
+
+}
 
 void excluirEquip() {
+    int escolha;
+
+    while (1) {
+        int count = 0;
+        for (int i = 0; equipamentos[i].id != 0; i++) {
+            printf("%d - %s\n", equipamentos[i].id, equipamentos[i].nome);
+            count++;
+        }
+        printf("0 - Voltar\n");
+        printf("Digite o id do equipamentos que deseja remover: ");
+        scanf("%d", &escolha);
+
+        if (escolha == 0) {
+            break;
+        } else if (escolha > 0 && escolha <= count) {
+            removeEquipamento(escolha);
+        } else {
+            printf("Opção invalida!");
+        }
+    }
 
 }
 
@@ -312,7 +366,7 @@ void menuEquipamentos() { // ATENÇÃO EM PROCESSO DE EDIÇÃO!!!//
                 criarEquip();
                 break;
             case 2:
-                //excluirEquip();
+                excluirEquip();
                 break;
             case 3:
                 editarEquip();
